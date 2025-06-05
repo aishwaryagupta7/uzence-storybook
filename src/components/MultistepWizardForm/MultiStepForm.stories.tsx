@@ -1,6 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MultiStepForm } from './MultiStepForm';
-import { action } from '@storybook/addon-actions';
+
+// Fallback action function for Storybook 9.0.5
+const action = (name: string) => {
+  return (...args: any[]) => {
+    console.log(`[${name}]`, ...args);
+    // This mimics the behavior of @storybook/addon-actions
+    if (window && (window as any).__STORYBOOK_ADDONS_CHANNEL__) {
+      (window as any).__STORYBOOK_ADDONS_CHANNEL__.emit('storybook/actions/action-event', {
+        id: name,
+        data: { name, args }
+      });
+    }
+  };
+};
 
 const meta = {
   title: 'Components/MultiStepForm',

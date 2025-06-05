@@ -96,7 +96,7 @@ export const MultiStepForm = ({
   };
 
   return (
-    <div className={`w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg ${className}`}>
+    <div className={`w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg flex flex-col min-h-[80vh] sm:min-h-[70vh] ${className}`}>
       {/* Progress Header */}
       <div className="p-4 sm:p-6 border-b">
         <div className="flex items-center justify-between">
@@ -140,14 +140,14 @@ export const MultiStepForm = ({
       </div>
 
       {/* Step Content */}
-      <div className="p-4 sm:p-6 min-h-[50vh] sm:h-[55vh]">
-        <div className="transition-all duration-300">
+      <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
+        <div className="transition-all duration-300 min-h-[45vh] sm:min-h-[50vh] pb-4">
           {renderStepContent()}
         </div>
       </div>
 
       {/* Navigation Footer */}
-      <div className="p-4 sm:p-5 border-t bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
+      <div className="p-4 sm:p-5 border-t bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 mt-auto">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}
