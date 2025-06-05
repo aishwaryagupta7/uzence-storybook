@@ -1,4 +1,3 @@
-// src/components/ModalSystem/Modal.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
 import { Modal } from './Modal';
 import "../../App.css";
@@ -31,7 +30,6 @@ const meta = {
             - \`Drawer\`: Slide-in panel from any direction
             - \`ModalProvider\`: Context for managing stacked modals
 
-            ## API
             ### Modal Props
             - \`isOpen\`: boolean - Controls modal visibility
             - \`onClose\`: function - Close handler
@@ -106,7 +104,7 @@ export const Sizes: Story = {
     children: null
   },
   render: () => (
-    <div className="space-x-4">
+    <div className=" grid grid-cols-2 gap-4">
       <ModalWrapper size="small" title="Small Modal" />
       <ModalWrapper size="medium" title="Medium Modal" />
       <ModalWrapper size="large" title="Large Modal" />

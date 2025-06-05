@@ -1,7 +1,9 @@
-// src/components/MultiStepWizardForm/MultiStepForm.tsx
 import React, { useState } from 'react';
 import { Check, ChevronLeft, ChevronRight, User, Settings, CheckCircle } from 'lucide-react';
 import type { MultiStepFormProps, FormData, WizardStep } from './MultiStepForm.types';
+import { PersonalStep } from './PersonalStep';
+import { PreferenceStep } from './PreferenceStep';
+import { ReviewStep } from './ReviewStep';
 
 const steps: WizardStep[] = [
   { id: 'personal', title: 'Personal Info' },
@@ -9,120 +11,11 @@ const steps: WizardStep[] = [
   { id: 'review', title: 'Review' }
 ];
 
-const PersonalStep: React.FC<{
-  data: FormData;
-  onChange: (data: Partial<FormData>) => void;
-  errors: Record<string, string>;
-}> = ({ data, onChange, errors }) => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">First Name *</label>
-        <input
-          type="text"
-          value={data.firstName || ''}
-          onChange={(e) => onChange({ firstName: e.target.value })}
-          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            errors.firstName ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Enter first name"
-        />
-        {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Last Name *</label>
-        <input
-          type="text"
-          value={data.lastName || ''}
-          onChange={(e) => onChange({ lastName: e.target.value })}
-          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            errors.lastName ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Enter last name"
-        />
-        {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
-      </div>
-    </div>
-    <div>
-      <label className="block text-sm font-medium mb-1">Email *</label>
-      <input
-        type="email"
-        value={data.email || ''}
-        onChange={(e) => onChange({ email: e.target.value })}
-        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-          errors.email ? 'border-red-500' : 'border-gray-300'
-        }`}
-        placeholder="Enter email address"
-      />
-      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-    </div>
-  </div>
-);
-
-const PreferencesStep: React.FC<{
-  data: FormData;
-  onChange: (data: Partial<FormData>) => void;
-  errors: Record<string, string>;
-}> = ({ data, onChange }) => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold mb-4">Preferences</h3>
-    <div>
-      <label className="block text-sm font-medium mb-2">Notifications</label>
-      <div className="space-y-2">
-        {['email', 'sms', 'none'].map((option) => (
-          <label key={option} className="flex items-center">
-            <input
-              type="radio"
-              name="notifications"
-              value={option}
-              checked={data.notifications === option}
-              onChange={(e) => onChange({ notifications: e.target.value })}
-              className="mr-2"
-            />
-            <span className="capitalize">{option}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        id="marketing"
-        checked={data.marketing || false}
-        onChange={(e) => onChange({ marketing: e.target.checked })}
-        className="mr-2"
-      />
-      <label htmlFor="marketing" className="text-sm">Receive marketing emails</label>
-    </div>
-  </div>
-);
-
-const ReviewStep: React.FC<{ data: FormData }> = ({ data }) => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold mb-4">Review Your Information</h3>
-    <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-      <p><strong>Name:</strong> {data.firstName} {data.lastName}</p>
-      <p><strong>Email:</strong> {data.email}</p>
-      <p><strong>Notifications:</strong> {data.notifications || 'Not selected'}</p>
-      <p><strong>Marketing:</strong> {data.marketing ? 'Yes' : 'No'}</p>
-    </div>
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        id="terms"
-        checked={data.terms || false}
-        className="mr-2"
-      />
-      <label htmlFor="terms" className="text-sm">I agree to the terms and conditions *</label>
-    </div>
-  </div>
-);
-
-export const MultiStepForm: React.FC<MultiStepFormProps> = ({
+export const MultiStepForm = ({
   onComplete,
-  className = ''
-}) => {
+  className = '',
+  allowSkip= true
+}:MultiStepFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<FormData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -189,9 +82,22 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
     return <CheckCircle className="w-5 h-5" />;
   };
 
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return <PersonalStep data={data} onChange={handleDataChange} errors={errors} />;
+      case 1:
+        return <PreferenceStep data={data} onChange={handleDataChange} />;
+      case 2:
+        return <ReviewStep data={data} onChange={handleDataChange} errors={errors} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={`max-w-2xl mx-auto bg-white rounded-lg shadow-lg ${className}`}>
-      {/* Progress Indicator */}
+      {/* Progress Header */}
       <div className="p-6 border-b">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
@@ -228,34 +134,28 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
       </div>
 
       {/* Step Content */}
-      <div className="p-6 min-h-[400px]">
+      <div className="p-6 h-[55vh]">
         <div className="transition-all duration-300">
-          {currentStep === 0 && (
-            <PersonalStep data={data} onChange={handleDataChange} errors={errors} />
-          )}
-          {currentStep === 1 && (
-            <PreferencesStep data={data} onChange={handleDataChange} errors={errors} />
-          )}
-          {currentStep === 2 && <ReviewStep data={data} />}
+          {renderStepContent()}
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="p-6 border-t bg-gray-50 flex justify-between items-center">
+      {/* Navigation Footer */}
+      <div className="p-5 border-t bg-gray-50 flex justify-between items-center">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}
-          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer disabled:opacity-50  disabled:cursor-not-allowed"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Previous
         </button>
 
         <div className="flex space-x-2">
-          {steps[currentStep]?.optional && currentStep < steps.length - 1 && (
+          {steps[currentStep]?.optional && allowSkip && currentStep < steps.length - 1 && (
             <button
               onClick={handleSkip}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer"
             >
               Skip
             </button>
@@ -263,7 +163,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
           <button
             onClick={handleNext}
             disabled={isLoading}
-            className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             {isLoading ? (
               'Processing...'

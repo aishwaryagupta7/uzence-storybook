@@ -1,8 +1,6 @@
-// src/components/ModalSystem/Modal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import type { ModalProps } from './Modal.types';
-import { useModal } from './useModal';
 import { MODAL_SIZES, ANIMATIONS, DRAWER_CONFIG, DEFAULT_PROPS } from './Modal.constants';
 
 export const Modal = ({
@@ -28,11 +26,24 @@ export const Modal = ({
   width = DEFAULT_PROPS.width,
   height = DEFAULT_PROPS.height
 }: ModalProps) => {
-  const { modalRef, handleTabKeyPress } = useModal(isOpen, onClose, closeOnEscape);
+  const modalRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
   const isDrawer = variant === 'drawer';
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && closeOnEscape && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose, closeOnEscape]);
 
   useEffect(() => {
     if (isOpen && !shouldRender) {
@@ -51,6 +62,7 @@ export const Modal = ({
       onClose();
     }
   };
+  
 
   const getAnimation = () => {
     if (isDrawer) {
@@ -70,8 +82,7 @@ export const Modal = ({
     fixed inset-0 z-${zIndex} flex
     ${isDrawer ? DRAWER_CONFIG[position].containerAlignment : 'items-center justify-center p-4'}
     ${backdrop ? 'bg-black/30' : ''}
-    ${backdrop && backdropBlur ? 'backdrop-blur-sm' : ''}
-    transition-opacity duration-300
+    ${backdrop && backdropBlur ? '' : 'bg-gray-500 backdrop-blur-lg'}
     ${isAnimating ? 'opacity-100' : 'opacity-0'}
     ${overlayClassName}
   `;
@@ -92,6 +103,7 @@ export const Modal = ({
     const isHorizontal = position === 'left' || position === 'right';
     return isHorizontal ? { width } : { height };
   };
+  
 
   return (
     <div
@@ -105,7 +117,6 @@ export const Modal = ({
         ref={modalRef}
         className={`${getModalClasses()} ${className}`}
         style={getCustomSize()}
-        onKeyDown={handleTabKeyPress}
       >
         {/* Loading State */}
         {isLoading && (
@@ -131,7 +142,7 @@ export const Modal = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
+                className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 cursor-pointer"
                 aria-label={`Close ${variant}`}
               >
                 <X className="w-5 h-5" />
@@ -139,8 +150,6 @@ export const Modal = ({
             )}
           </div>
         )}
-
-        {/* Content */}
         <div className="flex-1 p-4">
           {children}
         </div>

@@ -1,4 +1,3 @@
-// src/components/ModalSystem/Modal.types.ts
 import type { ReactNode } from 'react';
 
 export type ModalSize = 'small' | 'medium' | 'large' | 'fullscreen';

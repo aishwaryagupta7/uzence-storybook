@@ -1,23 +1,22 @@
-// src/components/MultiStepWizardForm/MultiStepForm.types.ts
+export interface FormData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  notifications?: string;
+  marketing?: boolean;
+  terms?: boolean;
+}
+
 export interface WizardStep {
   id: string;
   title: string;
   optional?: boolean;
 }
 
-export interface FormData {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  notifications?: string;
-  marketing?: boolean;
-  terms?: boolean;
-}
-
 export interface MultiStepFormProps {
   onComplete?: (data: FormData) => void;
   className?: string;
+  allowSkip?: boolean;
 }
 
 export interface StepProps {

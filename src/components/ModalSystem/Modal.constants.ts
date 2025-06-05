@@ -1,4 +1,4 @@
-// src/components/ModalSystem/modal.constants.ts
+
 
 export const MODAL_SIZES = {
     small: 'max-w-sm',
