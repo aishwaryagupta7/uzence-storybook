@@ -14,8 +14,8 @@ const steps: WizardStep[] = [
 export const MultiStepForm = ({
   onComplete,
   className = '',
-  allowSkip= true
-}:MultiStepFormProps) => {
+  allowSkip = true
+}: MultiStepFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<FormData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,10 +76,10 @@ export const MultiStepForm = ({
   };
 
   const getStepIcon = (index: number) => {
-    if (completedSteps.has(index)) return <Check className="w-5 h-5" />;
-    if (index === 0) return <User className="w-5 h-5" />;
-    if (index === 1) return <Settings className="w-5 h-5" />;
-    return <CheckCircle className="w-5 h-5" />;
+    if (completedSteps.has(index)) return <Check className="w-4 h-4 sm:w-5 sm:h-5" />;
+    if (index === 0) return <User className="w-4 h-4 sm:w-5 sm:h-5" />;
+    if (index === 1) return <Settings className="w-4 h-4 sm:w-5 sm:h-5" />;
+    return <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />;
   };
 
   const renderStepContent = () => {
@@ -96,15 +96,15 @@ export const MultiStepForm = ({
   };
 
   return (
-    <div className={`max-w-2xl mx-auto bg-white rounded-lg shadow-lg ${className}`}>
+    <div className={`w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg ${className}`}>
       {/* Progress Header */}
-      <div className="p-6 border-b">
+      <div className="p-4 sm:p-6 border-b">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <React.Fragment key={step.id}>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center flex-1 min-w-0">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                     completedSteps.has(index)
                       ? 'bg-green-500 text-white'
                       : index === currentStep
@@ -114,17 +114,23 @@ export const MultiStepForm = ({
                 >
                   {getStepIcon(index)}
                 </div>
-                <div className="mt-2 text-center">
-                  <p className={`text-sm font-medium ${
+                <div className="mt-1 sm:mt-2 text-center">
+                  <p className={`text-xs sm:text-sm font-medium truncate ${
                     index === currentStep ? 'text-blue-600' : 'text-gray-500'
                   }`}>
-                    {step.title}
-                    {step.optional && ' (Optional)'}
+                    <span className="hidden sm:inline">{step.title}</span>
+                    <span className="sm:hidden">{step.title.split(' ')[0]}</span>
+                    {step.optional && (
+                      <>
+                        <span className="hidden sm:inline"> (Optional)</span>
+                        <span className="sm:hidden text-xs block">Opt.</span>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
               {index < steps.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-4 ${
+                <div className={`flex-1 h-0.5 mx-2 sm:mx-4 ${
                   completedSteps.has(index) ? 'bg-green-500' : 'bg-gray-200'
                 }`} />
               )}
@@ -134,28 +140,28 @@ export const MultiStepForm = ({
       </div>
 
       {/* Step Content */}
-      <div className="p-6 h-[55vh]">
+      <div className="p-4 sm:p-6 min-h-[50vh] sm:h-[55vh]">
         <div className="transition-all duration-300">
           {renderStepContent()}
         </div>
       </div>
 
       {/* Navigation Footer */}
-      <div className="p-5 border-t bg-gray-50 flex justify-between items-center">
+      <div className="p-4 sm:p-5 border-t bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}
-          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer disabled:opacity-50  disabled:cursor-not-allowed"
+          className="flex items-center px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Previous
         </button>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 w-full sm:w-auto">
           {steps[currentStep]?.optional && allowSkip && currentStep < steps.length - 1 && (
             <button
               onClick={handleSkip}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer"
+              className="flex-1 sm:flex-none px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer text-sm sm:text-base"
             >
               Skip
             </button>
@@ -163,7 +169,7 @@ export const MultiStepForm = ({
           <button
             onClick={handleNext}
             disabled={isLoading}
-            className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center px-4 sm:px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer text-sm sm:text-base"
           >
             {isLoading ? (
               'Processing...'
